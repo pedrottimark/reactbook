@@ -15,7 +15,6 @@
   "eslintConfig": {
     "parser": "babel-eslint",
     "plugins": [
-      "babel",
       "react"
     ],
     "extends": "eslint:recommended",
@@ -113,5 +112,29 @@
       "node_modules/react-addons-test-utils",
       "node_modules/fbjs"
     ]
+  },
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "fbemitter": "^2.1.1",
+    "immutable": "^3.8.1",
+    "invariant": "^2.2.1",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-eslint": "^7.0.0",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "browserify": "^13.1.0",
+    "cssshrink": "0.0.5",
+    "eslint": "^3.7.1",
+    "eslint-plugin-react": "^6.4.1",
+    "flow-bin": "^0.33.0",
+    "jest-cli": "^16.0.1",
+    "react-addons-test-utils": "^15.3.2",
+    "uglify": "^0.1.5",
+    "watch": "^1.0.1"
   }
 }
