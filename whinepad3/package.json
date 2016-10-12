@@ -128,13 +128,11 @@
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
     "browserify": "^13.1.0",
-    "cssshrink": "0.0.5",
     "eslint": "^3.7.1",
     "eslint-plugin-react": "^6.4.1",
     "flow-bin": "^0.33.0",
     "jest-cli": "^16.0.1",
     "react-addons-test-utils": "^15.3.2",
-    "uglify": "^0.1.5",
     "watch": "^1.0.1"
   }
 }
