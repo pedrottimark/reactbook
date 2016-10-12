@@ -87,6 +87,13 @@
       "react/jsx-sort-props": 0,
       "react/jsx-uses-react": 2,
       "react/jsx-uses-vars": 2,
+      "react/jsx-wrap-multilines": [
+        2,
+        {
+          "declaration": false,
+          "assignment": false
+        }
+      ],
       "react/no-did-mount-set-state": 0,
       "react/no-did-update-set-state": 0,
       "react/no-multi-comp": 0,
@@ -94,14 +101,7 @@
       "react/prop-types": 0,
       "react/react-in-jsx-scope": 2,
       "react/self-closing-comp": 2,
-      "react/sort-comp": 0,
-      "react/wrap-multilines": [
-        2,
-        {
-          "declaration": false,
-          "assignment": false
-        }
-      ]
+      "react/sort-comp": 0
     }
   },
   "jest": {
