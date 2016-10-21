@@ -13,21 +13,21 @@ type Props = {
 };
 
 class Form extends Component {
-  
+
   props: Props;
-  
+
   getData(): Object {
     let data: Object = {};
-    this.props.fields.forEach((field: FormInputField) => 
+    this.props.fields.forEach((field: FormInputField) =>
       data[field.id] = this.refs[field.id].getValue()
     );
     return data;
   }
-  
+
   render() {
     return (
       <form className="Form">{this.props.fields.map((field: FormInputField) => {
-        const prefilled: FormInputFieldValue = (this.props.initialData && this.props.initialData[field.id]) || '';
+        const prefilled: ?FormInputFieldValue = this.props.initialData && this.props.initialData[field.id];
         if (!this.props.readonly) {
           return (
             <div className="FormRow" key={field.id}>

@@ -13,10 +13,10 @@ type Props = {
 };
 
 class Form extends Component {
-  
+
   fields: Array<Object>;
   initialData: ?Object;
-  
+
   constructor(props: Props) {
     super(props);
     this.fields = CRUDStore.getSchema();
@@ -24,19 +24,19 @@ class Form extends Component {
       this.initialData = CRUDStore.getRecord(this.props.recordId);
     }
   }
-  
+
   getData(): Object {
     let data: Object = {};
-    this.fields.forEach((field: FormInputField) => 
+    this.fields.forEach((field: FormInputField) =>
       data[field.id] = this.refs[field.id].getValue()
     );
     return data;
   }
-  
+
   render() {
     return (
       <form className="Form">{this.fields.map((field: FormInputField) => {
-        const prefilled: FormInputFieldValue = (this.initialData && this.initialData[field.id]) || '';
+        const prefilled: ?FormInputFieldValue = this.initialData && this.initialData[field.id];
         if (!this.props.readonly) {
           return (
             <div className="FormRow" key={field.id}>

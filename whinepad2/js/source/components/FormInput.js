@@ -17,9 +17,9 @@ export type FormInputField = {
 };
 
 class FormInput extends Component {
-  
+
   props: FormInputField;
-  
+
   static defaultProps = {
     type: 'input',
   };
@@ -41,7 +41,7 @@ class FormInput extends Component {
         return (
           <input
             {...common}
-            type="number" 
+            type="number"
             defaultValue={this.props.defaultValue || new Date().getFullYear()} />
         );
       case 'suggest':
@@ -50,7 +50,7 @@ class FormInput extends Component {
         return (
           <Rating
             {...common}
-            defaultValue={parseInt(this.props.defaultValue, 10)} />
+            defaultValue={this.props.defaultValue} />
         );
       case 'text':
         return <textarea {...common} />;
