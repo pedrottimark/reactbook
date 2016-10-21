@@ -1,88 +1,74 @@
 /* @flow */
 
-import Button from './Button';
-import CRUDActions from '../flux-imm/CRUDActions';
-import CRUDStore from '../flux-imm/CRUDStore';
-import Dialog from './Dialog';
-import Excel from './Excel';
-import Form from './Form';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
-type State = {
-  addnew: boolean,
-  count: number,
+import { createStore, applyMiddleware } from 'redux';
+import createLogger from 'redux-logger';
+import { Provider } from 'react-redux';
+
+import { receiveData } from '../actions';
+import reducer from '../reducers';
+import { readData, writeRecords } from '../storage'
+
+import Excel from './Excel';
+import Logo from './Logo';
+import ModalDialogs from './ModalDialogs';
+import Toolbar from './Toolbar';
+
+import type { Records } from '../reducers/records';
+type SubState = {
+  received: boolean,
+  records: Records,
 };
 
+// Redux is a predictable state container for JavaScript apps.
+const logger = createLogger();
+const store = createStore(reducer, applyMiddleware(logger));
+
 class Whinepad extends Component {
-  
-  state: State;
-  
-  constructor() {
-    super();
-    this.state = {
-      addnew: false,
-      count: CRUDStore.getCount(),
-    };
-    
-    CRUDStore.addListener('change', () => {
-      this.setState({
-        count: CRUDStore.getCount(),
-      })
+  unsubscribe: Function;
+
+  componentDidMount() {
+    // Redux listener
+    let { received: receivedPrev, records: recordsPrev }: SubState = store.getState();
+    this.unsubscribe = store.subscribe(() => {
+      const { received, records }: SubState = store.getState();
+      // After the records have been received, write any changes.
+      if (receivedPrev && recordsPrev !== records) {
+        writeRecords(records);
+      }
+      receivedPrev = received;
+      recordsPrev = records;
+    });
+    readData((records) => {
+      store.dispatch(receiveData(records));
     });
   }
-  
-  shouldComponentUpdate(newProps: Object, newState: State): boolean {
-    return newState.addnew !== this.state.addnew || newState.count !== this.state.count;
+
+  componentWillUnmount() {
+    this.unsubscribe();
   }
-  
-  _addNewDialog() {
-    this.setState({addnew: true});
-  }
-  
-  _addNew(action: string) {
-    this.setState({addnew: false});
-    if (action === 'confirm') {
-      CRUDActions.create(this.refs.form.getData());
-    }
-  }
-    
+
   render() {
     return (
-      <div className="Whinepad">
-        <div className="WhinepadToolbar">
-          <div className="WhinepadToolbarAdd">
-            <Button 
-              onClick={this._addNewDialog.bind(this)}
-              className="WhinepadToolbarAddButton">
-              + add
-            </Button>
-          </div>
-          <div className="WhinepadToolbarSearch">
-            <input 
-              placeholder={this.state.count === 1
-                ? 'Search 1 record...'
-                : `Search ${this.state.count} records...`
-              } 
-              onChange={CRUDActions.search.bind(CRUDActions)}
-              onFocus={CRUDActions.startSearching.bind(CRUDActions)} />
-          </div>
+      <div>
+        <div className="app-header">
+          <Logo /> Welcome to Whinepad!
         </div>
-        <div className="WhinepadDatagrid">
-          <Excel />
+        <div className="Whinepad">
+          <Toolbar />
+          <div className="WhinepadDatagrid">
+            <Excel />
+          </div>
+          <ModalDialogs />
         </div>
-        {this.state.addnew
-          ? <Dialog 
-              modal={true}
-              header="Add new item"
-              confirmLabel="Add"
-              onAction={this._addNew.bind(this)}
-            >
-              <Form ref="form" />
-            </Dialog>
-          : null}
       </div>
     );
   }
 }
 
-export default Whinepad
+export default () => (
+  <Provider store={store}>
+    <Whinepad/>
+  </Provider>
+);

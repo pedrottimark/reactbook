@@ -1,42 +1,41 @@
 /* @flow */
 
-import CRUDStore from '../flux-imm/CRUDStore';
-import FormInput from './FormInput';
-import Rating from './Rating';
 import React, {Component} from 'react';
 
-import type {FormInputField, FormInputFieldValue} from './FormInput';
+import FormInput from './FormInput';
+import Rating from './Rating';
+
+import type { Fields, FieldValue } from '../reducers/fields';
 
 type Props = {
+  fields: Fields,
   readonly?: boolean,
   recordId: ?number,
 };
 
 class Form extends Component {
-  
-  fields: Array<Object>;
+
   initialData: ?Object;
-  
+
   constructor(props: Props) {
     super(props);
-    this.fields = CRUDStore.getSchema();
-    if ('recordId' in this.props) {
-      this.initialData = CRUDStore.getRecord(this.props.recordId);
+    if ('record' in this.props) {
+      this.initialData = this.props.record;
     }
   }
-  
+
   getData(): Object {
     let data: Object = {};
-    this.fields.forEach((field: FormInputField) => 
+    this.props.fields.forEach((field) =>
       data[field.id] = this.refs[field.id].getValue()
     );
     return data;
   }
-  
+
   render() {
     return (
-      <form className="Form">{this.fields.map((field: FormInputField) => {
-        const prefilled: FormInputFieldValue = (this.initialData && this.initialData[field.id]) || '';
+      <form className="Form">{this.props.fields.map((field) => {
+        const prefilled: ?FieldValue = this.initialData && this.initialData[field.id];
         if (!this.props.readonly) {
           return (
             <div className="FormRow" key={field.id}>

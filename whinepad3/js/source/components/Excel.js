@@ -1,245 +1,192 @@
 /* @flow */
 
-import * as Immutable from 'immutable';
-import Actions from './Actions';
-import CRUDActions from '../flux-imm/CRUDActions';
-import CRUDStore from '../flux-imm/CRUDStore';
-import Dialog from './Dialog';
-import Form from './Form';
-import FormInput from './FormInput';
-import Rating from './Rating';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+
+import { connect } from 'react-redux';
+
 import classNames from 'classnames';
 import invariant from 'invariant';
 
-type EditState = {
-  row: number,
-  key: string,
+import Actions from './Actions';
+import FormInput from './FormInput';
+import Rating from './Rating';
+
+import {
+  openDialog,
+  sortRecords,
+  updateField,
+} from '../actions';
+import type {
+  OpenDialog,
+  SortRecords,
+  UpdateField,
+} from '../actions';
+import type {
+  Fields,
+} from '../reducers/fields';
+import {
+  recordIdsInView,
+} from '../reducers/records';
+import type {
+  Records,
+  RecordIds,
+} from '../reducers/records';
+import type {
+  View,
+} from '../reducers/view';
+
+type Props = {
+  fields: Fields,
+  records: Records,
+  recordIds: RecordIds,
+  view: View,
+  openDialog: OpenDialog,
+  sortRecords: SortRecords,
+  updateField: UpdateField,
 };
 
-type DialogState = {
-  idx: number,
-  type: string,
-};
+type InputState = {
+  recordId: number,
+  fieldId: string,
+} | null;
 
 type State = {
-  data: Immutable.List<Object>,
-  sortby: ?string,
-  descending: boolean,
-  edit: ?EditState,
-  dialog: ?DialogState,
+  input: InputState,
 };
 
 class Excel extends Component {
+  props: Props;
   state: State;
-  schema: Array<Object>;
   constructor() {
     super();
     this.state = {
-      data: CRUDStore.getData(),
-      sortby: null, // schema.id
-      descending: false,
-      edit: null, // {row index, schema.id},
-      dialog: null, // {type, idx}
+      input: null, // {recordId, fieldId},
     };
-    this.schema = CRUDStore.getSchema();
-    CRUDStore.addListener('change', () => {
-      this.setState({
-        data: CRUDStore.getData(),
-      })
-    });
   }
 
-  _sort(key: string) {
-    const descending = this.state.sortby === key && !this.state.descending;
-    CRUDActions.sort(key, descending);
-    this.setState({
-      sortby: key,
-      descending: descending,
-    });
+  _refInput(input) {
+    this._input = input;
   }
+  _input: any; // TODO React element
 
-  _showEditor(e: Event) {
+  _showInput(e: Event) {
     const target = ((e.target: any): HTMLElement);
-    this.setState({edit: {
-      row: parseInt(target.dataset.row, 10),
-      key: target.dataset.key,
-    }});
+    this.setState({
+      input: {
+        recordId: parseInt(target.dataset.recordId, 10),
+        fieldId: target.dataset.fieldId,
+      },
+    });
   }
 
-  _save(e: Event) {
+  _saveInput(e: Event) {
     e.preventDefault();
-    invariant(this.state.edit, 'Messed up edit state');
-    CRUDActions.updateField(
-      this.state.edit.row,
-      this.state.edit.key,
-      this.refs.input.getValue()
+    const { input } = this.state;
+    invariant(input, 'Messed up input state');
+    this.props.updateField(
+      input.recordId,
+      input.fieldId,
+      this._input.getValue()
     );
     this.setState({
-      edit: null,
+      input: null,
     });
   }
-  
-  _actionClick(rowidx: number, action: string) {
-    this.setState({dialog: {type: action, idx: rowidx}});
-  }
-  
-  _deleteConfirmationClick(action: string) {
-    this.setState({dialog: null});
-    if (action === 'dismiss') {
-      return;
-    }
-    const index = this.state.dialog && this.state.dialog.idx;
-    invariant(typeof index === 'number', 'Unexpected dialog state');
-    CRUDActions.delete(index);
-  }
-  
-  _saveDataDialog(action: string) {
-    this.setState({dialog: null});
-    if (action === 'dismiss') {
-      return;
-    }
-    const index = this.state.dialog && this.state.dialog.idx;
-    invariant(typeof index === 'number', 'Unexpected dialog state');
-    CRUDActions.updateRecord(index, this.refs.form.getData());
+
+  _onAction(recordId: number, verb: string) {
+    this.props.openDialog(verb, recordId);
   }
 
   render() {
+    const { fields, recordIds, records, view: { sort } } = this.props;
+    const { input } = this.state;
     return (
       <div className="Excel">
-        {this._renderTable()}
-        {this._renderDialog()}
-      </div>
-    );
-  }
-  
-  _renderDialog() {
-    if (!this.state.dialog) {
-      return null;
-    }
-    const type = this.state.dialog.type;
-    switch (type) {
-      case 'delete':
-        return this._renderDeleteDialog();
-      case 'info':
-        return this._renderFormDialog(true);
-      case 'edit':
-        return this._renderFormDialog();
-      default:
-        throw Error(`Unexpected dialog type ${type}`);
-    }
-  }
-  
-  _renderDeleteDialog() {
-    const index = this.state.dialog && this.state.dialog.idx;
-    invariant(typeof index === 'number', 'Unexpected dialog state');
-    const first = this.state.data.get(index);
-    const nameguess = first[Object.keys(first)[0]];
-    return (
-      <Dialog 
-        modal={true}
-        header="Confirm deletion"
-        confirmLabel="Delete"
-        onAction={this._deleteConfirmationClick.bind(this)}
-      >
-        {`Are you sure you want to delete "${nameguess}"?`}
-      </Dialog>
-    );
-  }
-  
-  _renderFormDialog(readonly: ?boolean) {
-    const index = this.state.dialog && this.state.dialog.idx;
-    invariant(typeof index === 'number', 'Unexpected dialog state');
-    return (
-      <Dialog 
-        modal={true}
-        header={readonly ? 'Item info' : 'Edit item'}
-        confirmLabel={readonly ? 'ok' : 'Save'}
-        hasCancel={!readonly}
-        onAction={this._saveDataDialog.bind(this)}
-      >
-        <Form
-          ref="form"
-          recordId={index}
-          readonly={!!readonly} />
-      </Dialog>
-    ); 
-  }
-  
-  _renderTable() {
-    return (
-      <table>
-        <thead>
-          <tr>{
-            this.schema.map(item => {
-              if (!item.show) {
-                return null;
-              }
-              let title = item.label;
-              if (this.state.sortby === item.id) {
-                title += this.state.descending ? ' \u2191' : ' \u2193';
-              }
-              return (
-                <th 
-                  className={`schema-${item.id}`}
-                  key={item.id}
-                  onClick={this._sort.bind(this, item.id)}
-                >
-                  {title}
-                </th>
-              );
-            }, this)
-          }
-          <th className="ExcelNotSortable">Actions</th>
-          </tr>
-        </thead>
-        <tbody onDoubleClick={this._showEditor.bind(this)}>
-          {this.state.data.map((row, rowidx) => {
-            return (
-              <tr key={rowidx}>{
-                Object.keys(row).map((cell, idx) => {
-                  const schema = this.schema[idx];
-                  if (!schema || !schema.show) {
-                    return null;
-                  }
-                  const isRating = schema.type === 'rating';
-                  const edit = this.state.edit;
-                  let content = row[cell];
-                  if (!isRating && edit && edit.row === rowidx && edit.key === schema.id) {
-                    content = (
-                      <form onSubmit={this._save.bind(this)}>
-                        <FormInput ref="input" {...schema} defaultValue={content} />
-                      </form>
-                    );
-                  } else if (isRating) {
-                    content = <Rating readonly={true} defaultValue={Number(content)} />;
-                  }
+        <table>
+          <thead>
+            <tr>
+              {
+                fields.filter(({ show }) => !!show).map(({ id: fieldId, label }) => {
+                  const sorting = sort.length !== 0 && sort[0].fieldId === fieldId
+                    ? ` ${sort[0].descending ? '\u2191' : '\u2193'}`
+                    : '';
                   return (
-                    <td 
-                      className={classNames({
-                        [`schema-${schema.id}`]: true,
-                        'ExcelEditable': !isRating,
-                        'ExcelDataLeft': schema.align === 'left',
-                        'ExcelDataRight': schema.align === 'right',
-                        'ExcelDataCenter': schema.align !== 'left' && schema.align !== 'right',
-                      })} 
-                      key={idx}
-                      data-row={rowidx}
-                      data-key={schema.id}>
-                      {content}
-                    </td>
+                    <th
+                      className={`schema-${fieldId}`}
+                      key={fieldId}
+                      onClick={this.props.sortRecords.bind(null, fieldId)}
+                    >
+                      {`${label}${sorting}`}
+                    </th>
                   );
-                }, this)}
-                <td className="ExcelDataCenter">
-                  <Actions onAction={this._actionClick.bind(this, rowidx)} />
-                </td>
-              </tr>
-            );
-          }, this)}
-        </tbody>
-      </table>
+                })
+              }
+              <th className="ExcelNotSortable">Actions</th>
+            </tr>
+          </thead>
+          <tbody onDoubleClick={this._showInput.bind(this)}>
+            {
+              recordIds.map((recordId) => {
+                const record = records.get(recordId);
+                return (
+                  <tr key={recordId}>
+                    {
+                      fields.filter(({ show }) => !!show).map((field) => {
+                        const { align, id: fieldId, type } = field;
+                        const isRating = type === 'rating';
+                        let content = record[fieldId];
+                        if (isRating) {
+                          content = <Rating readonly={true} defaultValue={Number(content)} />;
+                        } else if (input && input.recordId === recordId && input.fieldId === fieldId) {
+                          content = (
+                            <form onSubmit={this._saveInput.bind(this)}>
+                              <FormInput ref={this._refInput.bind(this)} {...field} defaultValue={content} />
+                            </form>
+                          );
+                        }
+                        return (
+                          <td
+                            className={classNames({
+                              [`schema-${fieldId}`]: true,
+                              'ExcelEditable': !isRating,
+                              'ExcelDataLeft': align === 'left',
+                              'ExcelDataRight': align === 'right',
+                              'ExcelDataCenter': align !== 'left' && align !== 'right',
+                            })}
+                            key={fieldId}
+                            data-record-id={recordId}
+                            data-field-id={fieldId}
+                          >
+                            {content}
+                          </td>
+                        );
+                      })
+                    }
+                    <td className="ExcelDataCenter">
+                      <Actions onAction={this._onAction.bind(this, recordId)} />
+                    </td>
+                  </tr>
+                );
+              })
+            }
+          </tbody>
+        </table>
+      </div>
     );
   }
 }
 
-export default Excel
+// A container component subscribes to relevant parts of state in the Redux store.
+const mapStateToProps = ({ fields, records, view }) => ({
+  fields,
+  records,
+  recordIds: recordIdsInView(records, fields, view),
+  view,
+});
+const mapDispatchToProps = {
+  openDialog,
+  sortRecords,
+  updateField,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Excel);

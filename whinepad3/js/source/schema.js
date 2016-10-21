@@ -2,7 +2,9 @@
 
 import classification from './classification';
 
-export default [
+import type { Fields } from './reducers/fields';
+
+const fields: Fields = [
   {
     id: 'name',
     label: 'Name',
@@ -21,7 +23,7 @@ export default [
     id: 'grape',
     label: 'Grape',
     type: 'suggest',
-    options: classification.grapes, 
+    options: classification.grapes,
     show: true,
     sample: 'Merlot',
     align: 'left',
@@ -39,4 +41,6 @@ export default [
     type: 'text',
     sample: 'Nice for the price',
   },
-]
+];
+
+export default fields

@@ -1,56 +1,54 @@
 /* @flow */
 
-import Rating from './Rating';
 import React, {Component} from 'react';
+
+import Rating from './Rating';
 import Suggest from './Suggest';
 
-type FormInputFieldType = 'year' | 'suggest' | 'rating' | 'text' | 'input';
+import type { FieldType, FieldValue } from '../reducers/fields';
 
-export type FormInputFieldValue = string | number;
-
-export type FormInputField = {
-  type: FormInputFieldType,
-  defaultValue?: FormInputFieldValue,
+export type Props = {
+  type: FieldType,
+  defaultValue?: FieldValue,
   id?: string,
   options?: Array<string>,
   label?: string,
 };
 
 class FormInput extends Component {
-  
-  props: FormInputField;
-  
+
+  props: Props;
+
   static defaultProps = {
     type: 'input',
   };
-    
-  getValue(): FormInputFieldValue {
+
+  getValue(): FieldValue {
     return 'value' in this.refs.input
       ? this.refs.input.value
       : this.refs.input.getValue();
   }
 
   render() {
+    const { defaultValue, id, type } = this.props;
     const common: Object = {
-      id: this.props.id,
+      id,
       ref: 'input',
-      defaultValue: this.props.defaultValue,
+      defaultValue,
     };
-    switch (this.props.type) {
+    switch (type) {
       case 'year':
         return (
           <input
             {...common}
-            type="number" 
-            defaultValue={this.props.defaultValue || new Date().getFullYear()} />
+            type="number"
+            defaultValue={defaultValue || new Date().getFullYear()} />
         );
       case 'suggest':
         return <Suggest {...common} options={this.props.options} />;
       case 'rating':
         return (
-          <Rating
-            {...common}
-            defaultValue={parseInt(this.props.defaultValue, 10)} />
+          <Rating {...common} />
         );
       case 'text':
         return <textarea {...common} />;

@@ -2,23 +2,25 @@
 
 import React from 'react';
 
+import type { Verb } from '../reducers/dialogue';
+
 type Props = {
-  onAction: Function,
+  onAction: (verb: Verb) => void,
 };
 
 const Actions = (props: Props) =>
   <div className="Actions">
-    <span 
+    <span
       tabIndex="0"
       className="ActionsInfo"
       title="More info"
-      onClick={props.onAction.bind(null, 'info')}>&#8505;</span>
-    <span 
-      tabIndex="0" 
-      className="ActionsEdit" 
+      onClick={props.onAction.bind(null, 'display')}>&#8505;</span>
+    <span
+      tabIndex="0"
+      className="ActionsEdit"
       title="Edit"
-      onClick={props.onAction.bind(null, 'edit')}>&#10000;</span>
-    <span 
+      onClick={props.onAction.bind(null, 'update')}>&#10000;</span>
+    <span
       tabIndex="0"
       className="ActionsDelete"
       title="Delete"
@@ -30,4 +32,3 @@ Actions.defaultProps = {
 };
 
 export default Actions
-

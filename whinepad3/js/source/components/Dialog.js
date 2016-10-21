@@ -1,7 +1,8 @@
 /* @flow */
 
+import React, { Component } from 'react';
+
 import Button from './Button';
-import React, {Component} from 'react';
 
 type Props = {
   header: string,
@@ -15,42 +16,42 @@ type Props = {
 class Dialog extends Component {
 
   props: Props;
-  
+
   static defaultProps = {
     confirmLabel: 'ok',
     modal: false,
     onAction: (_) => {},
     hasCancel: true,
   };
-  
+
   componentWillUnmount() {
     document.body.classList.remove('DialogModalOpen');
   }
-  
+
   componentDidMount() {
     if (this.props.modal) {
       document.body.classList.add('DialogModalOpen');
     }
   }
-  
+
   render() {
+    const { children, confirmLabel, hasCancel, header, modal, onAction } = this.props;
     return (
-      <div className={this.props.modal ? 'Dialog DialogModal' : 'Dialog'}>
-        <div className={this.props.modal ? 'DialogModalWrap' : null}>
-          <div className="DialogHeader">{this.props.header}</div>
-          <div className="DialogBody">{this.props.children}</div>
+      <div className={modal ? 'Dialog DialogModal' : 'Dialog'}>
+        <div className={modal ? 'DialogModalWrap' : null}>
+          <div className="DialogHeader">{header}</div>
+          <div className="DialogBody">{children}</div>
           <div className="DialogFooter">
-            {this.props.hasCancel
-              ? <span 
+            {hasCancel
+              ? <span
                   className="DialogDismiss"
-                  onClick={this.props.onAction.bind(this, 'dismiss')}>
+                  onClick={onAction.bind(null, false)}>
                   Cancel
                 </span>
               : null
             }
-            <Button onClick={this.props.onAction.bind(this, 
-                this.props.hasCancel ? 'confirm' : 'dismiss')}>
-              {this.props.confirmLabel}
+            <Button onClick={onAction.bind(null, hasCancel)}>
+              {confirmLabel}
             </Button>
           </div>
         </div>

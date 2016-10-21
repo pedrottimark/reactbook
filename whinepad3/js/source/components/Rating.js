@@ -1,6 +1,7 @@
 /* @flow */
 
 import React, {Component} from 'react';
+
 import classNames from 'classnames';
 
 type Props = {
@@ -15,16 +16,16 @@ type State = {
 };
 
 class Rating extends Component {
-  
+
   props: Props;
   state: State;
-  
+
   static defaultProps = {
     defaultValue: 0,
     max: 5,
     readonly: false,
   };
-  
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -32,13 +33,15 @@ class Rating extends Component {
       tmpRating: props.defaultValue,
     };
   }
-  
-  getValue(): number {
+
+  getValue() {
     return this.state.rating;
   }
-  
+
   setTemp(rating: number) {
-    this.setState({tmpRating: rating});
+    this.setState({
+      tmpRating: rating,
+    });
   }
 
   setRating(rating: number) {
@@ -55,12 +58,12 @@ class Rating extends Component {
   componentWillReceiveProps(nextProps: Props) {
     this.setRating(nextProps.defaultValue);
   }
- 
+
   render() {
     const stars = [];
     for (let i: number = 1; i <= this.props.max; i++) {
       stars.push(
-        <span 
+        <span
           className={i <= this.state.tmpRating ? 'RatingOn' : null}
           key={i}
           onClick={!this.props.readonly && this.setRating.bind(this, i)}
@@ -70,7 +73,7 @@ class Rating extends Component {
         </span>);
     }
     return (
-      <div 
+      <div
         className={classNames({
           'Rating': true,
           'RatingReadonly': this.props.readonly,
@@ -79,15 +82,15 @@ class Rating extends Component {
       >
         {stars}
         {this.props.readonly || !this.props.id
-          ? null 
-          : <input 
-              type="hidden" 
-              id={this.props.id} 
+          ? null
+          : <input
+              type="hidden"
+              id={this.props.id}
               value={this.state.rating} />
         }
       </div>
     );
-  }  
+  }
 }
 
 export default Rating
