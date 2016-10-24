@@ -25,11 +25,10 @@ import type {
   Fields,
 } from '../reducers/fields';
 import {
-  recordIdsInView,
+  recordsInView,
 } from '../reducers/records';
 import type {
-  Records,
-  RecordIds,
+  RecordsInView,
 } from '../reducers/records';
 import type {
   View,
@@ -37,8 +36,7 @@ import type {
 
 type Props = {
   fields: Fields,
-  records: Records,
-  recordIds: RecordIds,
+  records: RecordsInView,
   view: View,
   openDialog: OpenDialog,
   sortRecords: SortRecords,
@@ -98,7 +96,7 @@ class Excel extends Component {
   }
 
   render() {
-    const { fields, recordIds, records, view: { sort } } = this.props;
+    const { fields, records, view: { sorting } } = this.props;
     const { input } = this.state;
     return (
       <div className="Excel">
@@ -107,8 +105,8 @@ class Excel extends Component {
             <tr>
               {
                 fields.filter(({ show }) => !!show).map(({ id: fieldId, label }) => {
-                  const sorting = sort.length !== 0 && sort[0].fieldId === fieldId
-                    ? ` ${sort[0].descending ? '\u2191' : '\u2193'}`
+                  const indicator = sorting.length !== 0 && sorting[0].fieldId === fieldId
+                    ? ` ${sorting[0].descending ? '\u2191' : '\u2193'}`
                     : '';
                   return (
                     <th
@@ -116,7 +114,7 @@ class Excel extends Component {
                       key={fieldId}
                       onClick={this.props.sortRecords.bind(null, fieldId)}
                     >
-                      {`${label}${sorting}`}
+                      {`${label}${indicator}`}
                     </th>
                   );
                 })
@@ -126,8 +124,7 @@ class Excel extends Component {
           </thead>
           <tbody onDoubleClick={this._showInput.bind(this)}>
             {
-              recordIds.map((recordId) => {
-                const record = records.get(recordId);
+              records.map((record, recordId) => {
                 return (
                   <tr key={recordId}>
                     {
@@ -167,7 +164,7 @@ class Excel extends Component {
                     </td>
                   </tr>
                 );
-              })
+              }).toArray()
             }
           </tbody>
         </table>
@@ -179,8 +176,7 @@ class Excel extends Component {
 // A container component subscribes to relevant parts of state in the Redux store.
 const mapStateToProps = ({ fields, records, view }) => ({
   fields,
-  records,
-  recordIds: recordIdsInView(records, fields, view),
+  records: recordsInView(records, fields, view),
   view,
 });
 const mapDispatchToProps = {

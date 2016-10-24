@@ -40,8 +40,8 @@ class Whinepad extends Component {
       receivedPrev = received;
       recordsPrev = records;
     });
-    readData((records) => {
-      store.dispatch(receiveData(records));
+    readData((fields, records) => {
+      store.dispatch(receiveData(fields, records));
     });
   }
 

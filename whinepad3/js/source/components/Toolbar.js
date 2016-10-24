@@ -54,7 +54,7 @@ class Toolbar extends Component {
 
 // A container component subscribes to relevant parts of state in the Redux store.
 const mapStateToProps = ({ records }) => ({
-  count: records.count(),
+  count: records.size,
 });
 const mapDispatchToProps = {
   openDialog,

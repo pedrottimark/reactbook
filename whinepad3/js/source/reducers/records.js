@@ -1,15 +1,16 @@
 /* @flow */
 
-import { List } from 'immutable';
+import { List, OrderedMap } from 'immutable';
 
 import type { Action } from '../actions';
-import type { FieldValue, Fields } from './fields';
+import type { Fields } from './fields';
+import { inView } from './view';
 import type { View } from './view';
 
 export type Record = Object;
 export type Records = List<Record>;
 export type RecordId = number;
-export type RecordIds = List<RecordId>;
+export type RecordsInView = OrderedMap<RecordId, Record>;
 
 // Conversions between immutable collection and stored array.
 export const recordsFromStorage = (array: Record[]): Records => List(array);
@@ -45,25 +46,15 @@ export default function (records: Records = recordsInitial, action: Action): Rec
 }
 
 // Return a sample record when Whinepad runs the first time.
-export const recordSample = (fields: Fields): Record => fields.reduce((record, { id: fieldId, sample }) => {
-  record[fieldId] = sample;
-  return record;
-}, {});
+export const recordSample = (fields: Fields): Record =>
+  fields.reduce((record, { id: fieldId, sample }) => {
+    record[fieldId] = sample;
+    return record;
+  }, {});
 
-// Selectors
+// Selector
 
-function sortCallback(a: FieldValue, b: FieldValue, descending: boolean): number {
-  const res: number = typeof a === 'number' && typeof b === 'number'
-    ? a - b
-    : String(a).localeCompare(String(b));
-
-  return descending ? -res : res;
-}
-
-// Return a List of record ids in a view, given the sort and search critera.
+// Return records to display in a view, given the sort and search critera.
 // A record id is its index in the currently stored list of records.
-export const recordIdsInView = (records: Records, fields: Fields, { sort, search }: View): RecordIds =>
-  records
-    .map((record, recordId) => recordId)
-    .sort((recordIdA, recordIdB) => sort.reduce((result, { fieldId, descending }) => result || sortCallback(records.get(recordIdA)[fieldId], records.get(recordIdB)[fieldId], descending), 0) || sortCallback(recordIdA, recordIdB, false))
-    .filter((recordId) => search.length === 0 || fields.some(({ id: fieldId }) => records.get(recordId)[fieldId].toString().toLowerCase().includes(search)));
+export const recordsInView = (records: Records, fields: Fields, view: View): RecordsInView =>
+  inView(new OrderedMap(records.map((record, recordId) => [recordId, record])), fields, view);

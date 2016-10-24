@@ -5,7 +5,7 @@
 import type { FieldId, FieldValue, Fields } from './reducers/fields';
 import type { Record, RecordId, Records } from './reducers/records';
 
-type Action = {
+export type Action = {
   type: string,
 };
 
@@ -17,8 +17,8 @@ export const createRecord: CreateRecord = (record) => ({
   record,
 });
 
-//export type ReceiveData = ({ fields: Fields, records: Records }) => Action;
-export const receiveData = ({ fields, records }: { fields: Fields, records: Records }) => ({
+export type ReceiveData = (fields: Fields, records: Records) => Action;
+export const receiveData: ReceiveData = (fields, records) => ({
   type: 'RECEIVE_DATA',
   fields,
   records,
@@ -61,10 +61,10 @@ export const cancelDialog: CancelDialog = () => ({
 
 // Action creators related to view.
 
-export type SearchRecords = (search: string) => Action;
-export const searchRecords: SearchRecords = (search) => ({
+export type SearchRecords = (searching: string) => Action;
+export const searchRecords: SearchRecords = (searching) => ({
   type: 'SEARCH_RECORDS',
-  search,
+  searching,
 });
 
 export type SortRecords = (fieldId: FieldId) => Action;

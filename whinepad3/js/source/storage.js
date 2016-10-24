@@ -3,20 +3,19 @@
 import { recordSample, recordsFromStorage, recordsToStorage } from './reducers/records';
 import fields from './schema'; // pretend to read the schema from storage
 
+import type { ReceiveData } from './actions';
 import type { Records } from './reducers/records';
 
 const recordsKey = 'data';
 
-export function readData(callback: Function) {
+export function readData(callback: ReceiveData) {
   const recordsValue = 'localStorage' in window
     ? localStorage.getItem(recordsKey) // null when Whinepad runs the first time
     : null;
-  callback({
-    fields,
-    records: recordsValue
-      ? recordsFromStorage(JSON.parse(recordsValue))
-      : recordSample(fields),
-  });
+  callback(fields, recordsFromStorage(recordsValue
+    ? JSON.parse(recordsValue)
+    : [recordSample(fields)]
+  ));
 }
 
 export function writeRecords(records: Records) {
