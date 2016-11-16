@@ -16,6 +16,10 @@ import {
   sortRecords,
   updateField,
 } from '../actions';
+import {
+  recordsInView,
+} from '../reducers/records';
+
 import type {
   OpenDialog,
   SortRecords,
@@ -24,9 +28,6 @@ import type {
 import type {
   Fields,
 } from '../reducers/fields';
-import {
-  recordsInView,
-} from '../reducers/records';
 import type {
   RecordsInView,
 } from '../reducers/records';
