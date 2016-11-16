@@ -4,7 +4,6 @@
 
 import Actions from './components/Actions';
 import Button from './components/Button';
-import CRUDStore from './flux-imm/CRUDStore';
 import Dialog from './components/Dialog';
 import Form from './components/Form';
 import FormInput from './components/FormInput';
@@ -13,9 +12,7 @@ import Rating from './components/Rating';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Suggest from './components/Suggest';
-import schema from './schema';
-
-CRUDStore.init(schema);
+import fields from './schema';
 
 ReactDOM.render(
   <div style={{padding: '20px'}}>
@@ -26,11 +23,11 @@ ReactDOM.render(
 
     <h2>Buttons</h2>
     <div>Button with onClick: <Button onClick={() => alert('ouch')}>Click me</Button></div>
-    <div>A link: <Button href="http://reactjs.com">Follow me</Button></div> 
-    <div>Custom class name: <Button className="custom">I do nothing</Button></div> 
+    <div>A link: <Button href="http://reactjs.com">Follow me</Button></div>
+    <div>Custom class name: <Button className="custom">I do nothing</Button></div>
 
     <h2>Suggest</h2>
-    <Suggest options={['eenie', 'meenie', 'miney', 'mo']} />
+    <Suggest id="suggestions" options={['eenie', 'meenie', 'miney', 'mo']} />
 
     <h2>Rating</h2>
     <div>No initial value: <Rating /></div>
@@ -58,9 +55,10 @@ ReactDOM.render(
       </tr>
       <tr>
         <td>Suggest</td>
-        <td><FormInput 
-          type="suggest" 
-          options={['red', 'green', 'blue']} 
+        <td><FormInput
+          type="suggest"
+          id="suggestions"
+          options={['red', 'green', 'blue']}
           defaultValue="green" /></td>
       </tr>
       <tr>
@@ -71,24 +69,24 @@ ReactDOM.render(
 
     <h2>Form</h2>
 
-    <Form />
+    <Form fields={fields} />
 
     <h2>Form readonly</h2>
 
-    <Form readonly={true} recordId={0} />
+    <Form fields={fields} readonly={true} recordId={0} />
 
     <h2>Actions</h2>
     <div><Actions onAction={type => alert(type)} /></div>
 
     <h2>Dialog</h2>
-    <div><Dialog 
-      header="Out of the box example" 
+    <div><Dialog
+      header="Out of the box example"
       onAction={type => alert(type)}>
         Hello, dialog!
       </Dialog></div>
     <p>&nbsp;</p>
-    <div><Dialog 
-        header="No cancel, custom button" 
+    <div><Dialog
+        header="No cancel, custom button"
         hasCancel={false}
         confirmLabel="Whatever"
         onAction={type => alert(type)}>
@@ -100,4 +98,3 @@ ReactDOM.render(
   </div>,
   document.getElementById('pad')
 );
-

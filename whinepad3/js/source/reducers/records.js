@@ -2,7 +2,7 @@
 
 import { List, OrderedMap } from 'immutable';
 
-import type { Action } from '../actions';
+import type { Action, UpdateFieldAction } from '../actions';
 import type { Fields } from './fields';
 import { inView } from './view';
 import type { View } from './view';
@@ -35,10 +35,13 @@ export default function (records: Records = recordsInitial, action: Action): Rec
     case 'UPDATE_RECORD':
       return records.set(action.recordId, action.record);
 
-    case 'UPDATE_FIELD':
-      return records.update(action.recordId,
-        (record) => Object.assign({}, record, { [action.fieldId]: action.value })
+    case 'UPDATE_FIELD': {
+      // Destructuring and type cast to avoid warnings in Flow 0.35.0
+      const { recordId, fieldId, value } = (action: UpdateFieldAction);
+      return records.update(recordId,
+        (record) => Object.assign({}, record, { [fieldId]: value })
       );
+    }
 
     default:
       return records;

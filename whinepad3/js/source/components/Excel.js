@@ -26,6 +26,9 @@ import type {
   UpdateField,
 } from '../actions';
 import type {
+  Verb,
+} from '../reducers/dialogue';
+import type {
   Fields,
 } from '../reducers/fields';
 import type {
@@ -92,7 +95,7 @@ class Excel extends Component {
     });
   }
 
-  _onAction(recordId: number, verb: string) {
+  _onAction(recordId: number, verb: Verb) {
     this.props.openDialog(verb, recordId);
   }
 

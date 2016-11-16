@@ -2,14 +2,16 @@ import type { Action } from '../actions';
 import type { FieldId, FieldValue, Fields } from './fields';
 import type { Record, RecordsInView } from './records';
 
-type Sorting = {
+type SortingField = {
   fieldId: FieldId,
   descending: boolean,
 };
 
+export type Searching = string;
+
 export type View = {
-  searching: string,
-  sorting: Sorting[],
+  searching: Searching,
+  sorting: SortingField[],
 };
 
 const viewInitial = {
@@ -50,7 +52,7 @@ const compareFieldValues = (fieldValueA: FieldValue, fieldValueB: FieldValue, de
 
 // Return sorting comparision of records for zero or more fields.
 // Assume that the sorting is stable (for example, OrderedMap immutable collection).
-const compareRecords = (recordA: Record, recordB: Record, sorting: Sorting[]) : number =>
+const compareRecords = (recordA: Record, recordB: Record, sorting: SortingField[]) : number =>
   sorting.reduce((comparison, { fieldId, descending }) =>
     comparison || // compare field values only if all preceding comparisons are zero
     compareFieldValues(recordA[fieldId], recordB[fieldId], descending),
