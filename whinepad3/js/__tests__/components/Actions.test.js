@@ -1,35 +1,39 @@
-jest
-  .dontMock('../source/components/Actions')
-  .dontMock('./Wrap')
-;
-
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
+import renderer from 'react-test-renderer';
 
-const Actions = require('../source/components/Actions').default;
-const Wrap = require('./Wrap').default;
+import Actions from '../../source/components/Actions';
 
-describe('Click some actions', () => {
-  it('calls you back', () => {
-    const callback = jest.genMockFunction();
-    const actions = TestUtils.renderIntoDocument(
-      <Wrap><Actions onAction={callback} /></Wrap>
+// For TestUtils because Actions is a functional component.
+class Wrap extends React.Component {
+  render() {
+    return <div>{this.props.children}</div>;
+  }
+}
+
+describe('Actions', () => {
+
+  it('renders <div> containing <span> for each action', () => {
+    const tree = renderer.create(
+      <Actions />
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('calls onAction when people click each <span>', () => {
+    const onAction = jest.fn();
+    const component = TestUtils.renderIntoDocument(
+      <Wrap><Actions onAction={onAction} /></Wrap>
     );
 
-    /*
-    let spans = TestUtils
-      .scryRenderedDOMComponentsWithTag(actions, 'span');
-    console.log(spans[0].outerHTML);
-    */
+    const spans = TestUtils.scryRenderedDOMComponentsWithTag(component, 'span')
+    spans.forEach(span => TestUtils.Simulate.click(span));
 
-    TestUtils
-      .scryRenderedDOMComponentsWithTag(actions, 'span')
-      .forEach(span => TestUtils.Simulate.click(span));
-    
-    const calls = callback.mock.calls;
-    expect(calls.length).toEqual(3);
-    expect(calls[0][0]).toEqual('info');
-    expect(calls[1][0]).toEqual('edit');
+    const calls = onAction.mock.calls;
+    expect(calls.length).toEqual(spans.length);
+    expect(calls[0][0]).toEqual('display');
+    expect(calls[1][0]).toEqual('update');
     expect(calls[2][0]).toEqual('delete');
   });
+
 });

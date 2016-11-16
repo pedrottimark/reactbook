@@ -1,40 +1,82 @@
-jest
-  .dontMock('../source/components/Rating')
-  .dontMock('classnames')
-;
-
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 
-const Rating = require('../source/components/Rating').default;
+import Rating from '../../source/components/Rating';
 
-describe('works', () => {
-  it('handles user actions', () => {
-    const input = TestUtils.renderIntoDocument(<Rating />);
-    const stars = TestUtils.scryRenderedDOMComponentsWithTag(input, 'span');
-    
-    TestUtils.Simulate.mouseOver(stars[3]);
-    expect(stars[0].className).toBe('RatingOn');
-    expect(stars[3].className).toBe('RatingOn');
-    expect(stars[4].className).toBeFalsy();
-    expect(input.state.rating).toBe(0);
-    expect(input.state.tmpRating).toBe(4);
-    
-    TestUtils.Simulate.mouseOut(stars[3]);
-    expect(stars[0].className).toBeFalsy();
-    expect(stars[3].className).toBeFalsy();
-    expect(stars[4].className).toBeFalsy();
-    expect(input.state.rating).toBe(0);
-    expect(input.state.tmpRating).toBe(0);
+describe('Rating', () => {
 
-    TestUtils.Simulate.click(stars[3]);
-    expect(input.getValue()).toBe(4);
-    expect(stars[0].className).toBe('RatingOn');
-    expect(stars[3].className).toBe('RatingOn');
-    expect(stars[4].className).toBeFalsy();
-    expect(input.state.rating).toBe(4);
-    expect(input.state.tmpRating).toBe(4);
+  it('handles mouseOver, mouseOut, click', () => {
+    const component = TestUtils.renderIntoDocument(
+      <Rating />
+    );
+    const stars = TestUtils.scryRenderedDOMComponentsWithTag(component, 'span');
+    const defaultValue = 0;
+    const defaultIndex = defaultValue - 1; // zero-based
+    const otherValue = 4;
+    const otherIndex = otherValue - 1; // zero-based
+
+    TestUtils.Simulate.mouseOver(stars[otherIndex]);
+    stars.forEach((star, index) => expect(star.className).toBe(
+      index <= otherIndex ? 'RatingOn' : ''
+    ));
+    expect(component.getValue()).toBe(defaultValue);
+    expect(component.state.rating).toBe(defaultValue);
+    expect(component.state.tmpRating).toBe(otherValue);
+
+    TestUtils.Simulate.mouseOut(stars[otherIndex]);
+    stars.forEach((star, index) => expect(star.className).toBe(
+      index <= defaultIndex ? 'RatingOn' : ''
+    ));
+    expect(component.getValue()).toBe(defaultValue);
+    expect(component.state.rating).toBe(defaultValue);
+    expect(component.state.tmpRating).toBe(defaultValue);
+
+    TestUtils.Simulate.click(stars[otherIndex]);
+    stars.forEach((star, index) => expect(star.className).toBe(
+      index <= otherIndex ? 'RatingOn' : ''
+    ));
+    expect(component.getValue()).toBe(otherValue);
+    expect(component.state.rating).toBe(otherValue);
+    expect(component.state.tmpRating).toBe(otherValue);
   });
-  
+
 });
 
+describe('Rating with readonly prop', () => {
+
+  it('ignores mouseOver, mouseOut, click', () => {
+    const component = TestUtils.renderIntoDocument(
+      <Rating readonly={true} />
+    );
+    const stars = TestUtils.scryRenderedDOMComponentsWithTag(component, 'span');
+    const defaultValue = 0;
+    const defaultIndex = defaultValue - 1; // zero-based
+    const otherValue = 4;
+    const otherIndex = otherValue - 1; // zero-based
+
+    TestUtils.Simulate.mouseOver(stars[otherIndex]);
+    stars.forEach((star, index) => expect(star.className).toBe(
+      index <= defaultIndex ? 'RatingOn' : ''
+    ));
+    expect(component.getValue()).toBe(defaultValue);
+    expect(component.state.rating).toBe(defaultValue);
+    expect(component.state.tmpRating).toBe(defaultValue);
+
+    TestUtils.Simulate.mouseOut(stars[otherIndex]);
+    stars.forEach((star, index) => expect(star.className).toBe(
+      index <= defaultIndex ? 'RatingOn' : ''
+    ));
+    expect(component.getValue()).toBe(defaultValue);
+    expect(component.state.rating).toBe(defaultValue);
+    expect(component.state.tmpRating).toBe(defaultValue);
+
+    TestUtils.Simulate.click(stars[otherIndex]);
+    stars.forEach((star, index) => expect(star.className).toBe(
+      index <= defaultIndex ? 'RatingOn' : ''
+    ));
+    expect(component.getValue()).toBe(defaultValue);
+    expect(component.state.rating).toBe(defaultValue);
+    expect(component.state.tmpRating).toBe(defaultValue);
+  });
+
+});

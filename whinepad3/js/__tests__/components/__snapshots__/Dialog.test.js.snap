@@ -1,0 +1,101 @@
+exports[`Dialog with hasCancel={false} prop renders confirmLabel prop as text of the button 1`] = `
+<div
+  className="Dialog">
+  <div
+    className={null}>
+    <div
+      className="DialogHeader">
+      Close
+    </div>
+    <div
+      className="DialogBody" />
+    <div
+      className="DialogFooter">
+      <button
+        className="Button"
+        onClick={[Function]}>
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Dialog with hasCancel={false} prop renders only one button 1`] = `
+<div
+  className="Dialog">
+  <div
+    className={null}>
+    <div
+      className="DialogHeader">
+      ok
+    </div>
+    <div
+      className="DialogBody" />
+    <div
+      className="DialogFooter">
+      <button
+        className="Button"
+        onClick={[Function]}>
+        ok
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Dialog with hasCancel={true} or no hasCancel prop renders confirmLabel prop as text of the primary button 1`] = `
+<div
+  className="Dialog">
+  <div
+    className={null}>
+    <div
+      className="DialogHeader">
+      Add and Cancel
+    </div>
+    <div
+      className="DialogBody" />
+    <div
+      className="DialogFooter">
+      <span
+        className="DialogDismiss"
+        onClick={[Function]}>
+        Cancel
+      </span>
+      <button
+        className="Button"
+        onClick={[Function]}>
+        Add
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Dialog with hasCancel={true} or no hasCancel prop renders ok and cancel buttons 1`] = `
+<div
+  className="Dialog">
+  <div
+    className={null}>
+    <div
+      className="DialogHeader">
+      ok and Cancel
+    </div>
+    <div
+      className="DialogBody" />
+    <div
+      className="DialogFooter">
+      <span
+        className="DialogDismiss"
+        onClick={[Function]}>
+        Cancel
+      </span>
+      <button
+        className="Button"
+        onClick={[Function]}>
+        ok
+      </button>
+    </div>
+  </div>
+</div>
+`;

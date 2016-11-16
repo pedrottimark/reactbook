@@ -1,0 +1,29 @@
+exports[`Button appends className prop to class attribute 1`] = `
+<button
+  className="Button good bye">
+  Hello
+</button>
+`;
+
+exports[`Button with href prop renders <a> 1`] = `
+<a
+  className="Button"
+  href="#">
+  Hello
+</a>
+`;
+
+exports[`Button with no href prop renders <button> 1`] = `
+<button
+  className="Button">
+  Hello
+</button>
+`;
+
+exports[`Button renders onClick prop as attribute 1`] = `
+<button
+  className="Button"
+  onClick={[Function]}>
+  Hello
+</button>
+`;

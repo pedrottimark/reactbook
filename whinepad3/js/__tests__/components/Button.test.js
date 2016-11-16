@@ -1,42 +1,62 @@
-jest
-  .dontMock('../source/components/Button')
-  .dontMock('classnames')
-;
-
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
+import renderer from 'react-test-renderer';
 
-const Button = require('../source/components/Button').default;
+import Button from '../../source/components/Button';
 
-describe('Render Button components', () => {
-  it('renders <a> vs <button>', () => {
-    const button = TestUtils.renderIntoDocument(
-      <div>
-        <Button>
-          Hello
-        </Button>
-      </div>
-    );
-    expect(ReactDOM.findDOMNode(button).children[0].nodeName).toEqual('BUTTON');
-    
-    const a = TestUtils.renderIntoDocument(
-      <div>
-        <Button href="#">
-          Hello
-        </Button>
-      </div>
-    );
-    expect(ReactDOM.findDOMNode(a).children[0].nodeName).toEqual('A');
+// For TestUtils because Button is a functional component.
+class Wrap extends React.Component {
+  render() {
+    return <div>{this.props.children}</div>;
+  }
+}
+
+describe('Button with href prop', () => {
+
+  it('renders <a>', () => {
+    const tree = renderer.create(
+      <Button href="#">Hello</Button>
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
   });
-  
-  it('allows custom CSS classes', () => {
-    const button = TestUtils.renderIntoDocument(
-      <div><Button className="good bye">Hello</Button></div>
-    );
-    const buttonNode = ReactDOM.findDOMNode(button).children[0];
-    expect(buttonNode.getAttribute('class')).toEqual('Button good bye');
-  });
-  
+
 });
 
+describe('Button with no href prop', () => {
+
+  it('renders <button>', () => {
+    const tree = renderer.create(
+      <Button>Hello</Button>
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+});
+
+describe('Button', () => {
+
+  it('appends className prop to class attribute', () => {
+    const tree = renderer.create(
+      <Button className="good bye">Hello</Button>
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('renders onClick prop as attribute', () => {
+    const tree = renderer.create(
+      <Button onClick={() => {}}>Hello</Button>
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('calls onClick when people click', () => {
+    const onClick = jest.fn();
+    const component = TestUtils.renderIntoDocument(
+      <Wrap><Button onClick={onClick}>Hello</Button></Wrap>
+    );
+    const button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
+    TestUtils.Simulate.click(button);
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+});

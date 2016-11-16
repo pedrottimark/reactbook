@@ -1,0 +1,26 @@
+exports[`Actions renders <div> containing <span> for each action 1`] = `
+<div
+  className="Actions">
+  <span
+    className="ActionsInfo"
+    onClick={[Function]}
+    tabIndex="0"
+    title="More info">
+    ℹ
+  </span>
+  <span
+    className="ActionsEdit"
+    onClick={[Function]}
+    tabIndex="0"
+    title="Edit">
+    ✐
+  </span>
+  <span
+    className="ActionsDelete"
+    onClick={[Function]}
+    tabIndex="0"
+    title="Delete">
+    x
+  </span>
+</div>
+`;

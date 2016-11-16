@@ -1,77 +1,88 @@
-jest
-  .dontMock('../source/components/Dialog')
-  .dontMock('../source/components/Button')
-;
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
+import renderer from 'react-test-renderer';
 
-const Dialog = require('../source/components/Dialog').default;
+import Dialog from '../../source/components/Dialog';
 
-describe('renders with action buttons', () => {
-  it('can haz Cancel', () => {
-    const dialog = TestUtils.renderIntoDocument(
-      <Dialog>Civilized dialog</Dialog>
-    );
-    const cancel = TestUtils
-      .findRenderedDOMComponentWithClass(dialog, 'DialogDismiss');
-    expect(cancel.nodeName).toBe('SPAN');
-    const ok = TestUtils
-      .findRenderedDOMComponentWithTag(dialog, 'button');
-    expect(ok.textContent).toBe(Dialog.defaultProps.confirmLabel);    
+describe('Dialog with hasCancel={true} or no hasCancel prop', () => {
+
+  it('renders ok and cancel buttons', () => {
+    const tree = renderer.create(
+      <Dialog header="ok and Cancel" />
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
   });
-  
-  it('can haz a single dismiss button', () => {
-    const dialog = TestUtils.renderIntoDocument(
-      <Dialog hasCancel={false} confirmLabel="confirm">Civilized dialog</Dialog>
-    );
-    const cancels = TestUtils
-      .scryRenderedDOMComponentsWithClass(dialog, 'DialogDismiss');
-    expect(cancels.length).toBe(0);
-    let ok = TestUtils
-      .findRenderedDOMComponentWithTag(dialog, 'button');
-    expect(ok.textContent).toBe('confirm');
+
+  it('renders confirmLabel prop as text of the primary button', () => {
+    const tree = renderer.create(
+      <Dialog header="Add and Cancel" confirmLabel="Add" />
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
   });
-  
-  it('can be modal', () => {
-    const dialog = TestUtils.renderIntoDocument(
-      <Dialog modal={true}>Civilized dialog</Dialog>
-    );
-    expect(Array.from(document.body.classList)).toContain('DialogModalOpen');
-    
-    // removing the dialog
-    ReactDOM.unmountComponentAtNode(ReactDOM.findDOMNode(dialog).parentNode);
-    expect(Array.from(document.body.classList)).not.toContain('DialogModalOpen');
-  }); 
-  
-  it('has head and body', () => {
-    const dialog = TestUtils.renderIntoDocument(
-      <Dialog header="head">Civilized dialog</Dialog>
-    );
-    let node = ReactDOM.findDOMNode(dialog);
-    expect(node.getElementsByClassName('DialogHeader')[0].innerHTML).toBe('head');
-    expect(node.querySelector('.DialogBody').textContent).toBe('Civilized dialog');
-  }); 
-  
-  it('sends correct actions', () => {
-    const callback = jest.genMockFunction();
-    const yescancel = TestUtils.renderIntoDocument(
-      <Dialog onAction={callback} />
+
+  it('returns true or false when people click the primary or secondary button', () => {
+    const callback = jest.fn();
+    const component = TestUtils.renderIntoDocument(
+      <Dialog header="ok and Cancel" onAction={callback} />
     );
     TestUtils.Simulate.click(
-      TestUtils.findRenderedDOMComponentWithTag(yescancel, 'button'));
-    const nocancel = TestUtils.renderIntoDocument(
-      <Dialog onAction={callback} hasCancel={false} />
+      TestUtils.findRenderedDOMComponentWithTag(component, 'button')
     );
     TestUtils.Simulate.click(
-      TestUtils.findRenderedDOMComponentWithTag(nocancel, 'button'));
+      TestUtils.findRenderedDOMComponentWithTag(component, 'span')
+    );
 
     const calls = callback.mock.calls;
     expect(calls.length).toEqual(2);
-    expect(calls[0][0]).toEqual('confirm');
-    expect(calls[1][0]).toEqual('dismiss');
+    expect(calls[0][0]).toEqual(true);
+    expect(calls[1][0]).toEqual(false);
   });
-  
 });
 
+describe('Dialog with hasCancel={false} prop', () => {
+
+  it('renders only one button', () => {
+    const tree = renderer.create(
+      <Dialog header="ok" hasCancel={false} />
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('renders confirmLabel prop as text of the button', () => {
+    const tree = renderer.create(
+      <Dialog header="Close" hasCancel={false} confirmLabel="Close" />
+    ).toJSON();
+    expect(tree).toMatchSnapshot();
+  });
+
+  it('returns false when people click the button', () => {
+    const callback = jest.fn();
+    const component = TestUtils.renderIntoDocument(
+      <Dialog header="Close" hasCancel={false} confirmLabel="Close" onAction={callback} />
+    );
+    TestUtils.Simulate.click(
+      TestUtils.findRenderedDOMComponentWithTag(component, 'button')
+    );
+
+    const calls = callback.mock.calls;
+    expect(calls.length).toEqual(1);
+    expect(calls[0][0]).toEqual(false);
+  });
+
+});
+
+describe('Dialog with modal={true} prop', () => {
+
+  it('adds and removes class to body when it mounts and unmounts', () => {
+    const dialog = TestUtils.renderIntoDocument(
+      <Dialog header="Modal" modal={true}>Civilized dialog</Dialog>
+    );
+    expect(Array.from(document.body.classList)).toContain('DialogModalOpen');
+
+    // removing the dialog
+    ReactDOM.unmountComponentAtNode(ReactDOM.findDOMNode(dialog).parentNode);
+    expect(Array.from(document.body.classList)).not.toContain('DialogModalOpen');
+  });
+
+});

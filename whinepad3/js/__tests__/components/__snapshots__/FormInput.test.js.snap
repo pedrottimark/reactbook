@@ -1,0 +1,150 @@
+exports[`FormInput with no type prop renders <input type="text" /> 1`] = `
+<input
+  defaultValue={undefined}
+  type="text" />
+`;
+
+exports[`FormInput with no type prop renders <input type="text" /> with defaultValue 1`] = `
+<input
+  defaultValue="default value"
+  type="text" />
+`;
+
+exports[`FormInput with type="rating" prop renders <div> containing <span> for each star and <input type="hidden" /> 1`] = `
+<div
+  className="Rating"
+  onMouseOut={[Function]}>
+  <span
+    className={null}
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <span
+    className={null}
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <span
+    className={null}
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <span
+    className={null}
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <span
+    className={null}
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <input
+    type="hidden"
+    value={0} />
+</div>
+`;
+
+exports[`FormInput with type="rating" prop returns defaultValue prop of FormInput with type="rating" 1`] = `
+<div
+  className="Rating"
+  onMouseOut={[Function]}>
+  <span
+    className="RatingOn"
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <span
+    className="RatingOn"
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <span
+    className="RatingOn"
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <span
+    className={null}
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <span
+    className={null}
+    onClick={[Function]}
+    onMouseOver={[Function]}>
+    ☆
+  </span>
+  <input
+    type="hidden"
+    value={3} />
+</div>
+`;
+
+exports[`FormInput with type="suggest" prop renders <div> containing <input /> and <datalist> 1`] = `
+<div>
+  <input
+    defaultValue={undefined}
+    list="color"
+    onChange={[Function]} />
+  <datalist
+    id="color">
+    <option
+      value="r" />
+    <option
+      value="g" />
+    <option
+      value="b" />
+  </datalist>
+</div>
+`;
+
+exports[`FormInput with type="suggest" prop renders <div> containing <input /> and <datalist> with defaultValue 1`] = `
+<div>
+  <input
+    defaultValue="g"
+    list="color"
+    onChange={[Function]} />
+  <datalist
+    id="color">
+    <option
+      value="r" />
+    <option
+      value="g" />
+    <option
+      value="b" />
+  </datalist>
+</div>
+`;
+
+exports[`FormInput with type="text" prop renders <textarea /> 1`] = `
+<textarea
+  defaultValue={undefined} />
+`;
+
+exports[`FormInput with type="text" prop renders <textarea /> with defaultValue 1`] = `
+<textarea
+  defaultValue="default
+value" />
+`;
+
+exports[`FormInput with type="year" prop renders <input type="number" /> 1`] = `
+<input
+  defaultValue={2016}
+  type="number" />
+`;
+
+exports[`FormInput with type="year" prop renders <input type="number" /> with defaultValue 1`] = `
+<input
+  defaultValue={2016}
+  type="number" />
+`;
