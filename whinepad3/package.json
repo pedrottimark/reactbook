@@ -108,7 +108,9 @@
     }
   },
   "jest": {
-    "scriptPreprocessor": "node_modules/babel-jest"
+    "transform": {
+      ".*": "node_modules/babel-jest"
+    }
   },
   "dependencies": {
     "classnames": "^2.2.5",
