@@ -25,14 +25,14 @@ class FormInput extends Component {
 
   getValue(): FieldValue {
     return 'value' in this.refs.input
-      ? this.refs.input.value
+      ? (this.props.type === 'year' ? parseInt(this.refs.input.value, 10) : this.refs.input.value)
       : this.refs.input.getValue();
   }
 
   render() {
     const { defaultValue, id, type } = this.props;
     const common: Object = {
-      id,
+      //id,
       ref: 'input',
       defaultValue,
     };
@@ -45,7 +45,7 @@ class FormInput extends Component {
             defaultValue={defaultValue || new Date().getFullYear()} />
         );
       case 'suggest':
-        return <Suggest {...common} options={this.props.options} />;
+        return <Suggest {...common} id={id} options={this.props.options} />;
       case 'rating':
         return (
           <Rating {...common} />

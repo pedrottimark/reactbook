@@ -81,11 +81,10 @@ class Rating extends Component {
         onMouseOut={this.reset.bind(this)}
       >
         {stars}
-        {this.props.readonly || !this.props.id
+        {this.props.readonly
           ? null
           : <input
               type="hidden"
-              id={this.props.id}
               value={this.state.rating} />
         }
       </div>
