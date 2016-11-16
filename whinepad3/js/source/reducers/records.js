@@ -12,12 +12,12 @@ export type Records = List<Record>;
 export type RecordId = number;
 export type RecordsInView = OrderedMap<RecordId, Record>;
 
-// Conversions between immutable collection and stored array.
-export const recordsFromStorage = (array: Record[]): Records => List(array);
-export const recordsToStorage = (records: Records): Record[] => records.toArray();
+// Convert internal collection from and to external JSON.
+export const recordsFromJSON = (array: Record[]): Records => List(array);
+export const recordsToJSON = (records: Records): Record[] => records.toArray();
 
 // Initial state of records before they have been received from storage.
-const recordsInitial = recordsFromStorage([]);
+const recordsInitial = recordsFromJSON([]);
 
 export default function (records: Records = recordsInitial, action: Action): Records {
   switch (action.type) {
